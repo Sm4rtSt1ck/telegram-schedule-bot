@@ -20,7 +20,7 @@ This is a simple Telegram bot that allows students to view their university sche
 
 1. **Clone the repository:**
 ```sh
-git clone https://github.com/Sm4rtSt1ck/university-schedule-bot.git
+git clone https://github.com/Sm4rtSt1ck/telegram-schedule-bot.git
 ```
 
 2. **Install the required libraries:**
