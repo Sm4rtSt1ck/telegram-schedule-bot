@@ -4,9 +4,9 @@ This is a simple Telegram bot that allows students to view their university sche
 
 ## Features
 
-- **Group Selection:** Users can select their group to view the schedule.
-- **Schedule Display:** The schedule is displayed with formatted text for better readability.
-- **Back Button:** Users can navigate back to the group selection menu.
+- **Group Selection:** Users can select their group to view the schedule
+- **Schedule Display:** The schedule is displayed with formatted text for better readability
+- **Back Button:** Users can navigate back to the group selection menu
 
 ## Setup
 
@@ -20,7 +20,7 @@ This is a simple Telegram bot that allows students to view their university sche
 
 1. **Clone the repository:**
 ```sh
-git clone https://github.com/Sm4rtSt1ck/telegram-schedule-bot.git
+git clone https://github.com/Sm4rtSt1ck/telegram-schedule-bot
 ```
 
 2. **Install the required libraries:**
@@ -57,34 +57,34 @@ python main.py
 
 2. **Interact with the bot:**
 
-    - Start the bot by sending the `/start` command.
-    - Select your group from the list to view the schedule.
-    - Use the "Back" button to return to the group selection menu.
+    - Start the bot by sending the `/start` command
+    - Select your group from the list to view the schedule
+    - Use the "Back" button to return to the group selection menu
 
 ## Code Overview
 
 ### Files
 
-- **main.py:** The main script that runs the bot.
-- **.env:** File containing the bot token and other settings (not included in the repository for security reasons).
-- **schedule.csv:** CSV file containing the schedule (needs to be edited by the user).
+- **main.py:** The main script that runs the bot
+- **.env:** File containing the bot token and other settings (not included in the repository for security reasons)
+- **schedule.csv:** CSV file containing the schedule (needs to be edited by the user)
 
 ### Functions
 
-- **read_token:** Reads the bot token from `.env`.
-- **start:** Sends a welcome message and prompts the user to select a group.
-- **load_groups:** Loads the list of groups from the schedule CSV file.
-- **load_schedule:** Loads the schedule for a specific group from the CSV file.
-- **button:** Handles button clicks (group selection and back navigation).
-- **send_group_selection:** Sends the group selection menu to the user.
+- **read_token:** Reads the bot token from `.env`
+- **start:** Sends a welcome message and prompts the user to select a group
+- **load_groups:** Loads the list of groups from the schedule CSV file
+- **load_schedule:** Loads the schedule for a specific group from the CSV file
+- **button:** Handles button clicks (group selection and back navigation)
+- **send_group_selection:** Sends the group selection menu to the user
 
 ## Contributing
 
 1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes (`git commit -m 'Add some feature'`).
-4. Push to the branch (`git push origin feature/YourFeature`).
-5. Open a pull request.
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a pull request
 
 ## License
 
