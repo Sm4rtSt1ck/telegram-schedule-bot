@@ -1,34 +1,67 @@
 from datetime import datetime
 from os import getenv
 import csv
-from dotenv import load_dotenv
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, CallbackContext
+from dotenv import load_dotenv
+from telebot import TeleBot, types
 
 load_dotenv()
 TOKEN = getenv("TOKEN")
 
-WEEKDAYS = ["Понедельник", "Вторник", "Среду", "Четверг", "Пятницу", "Субботу", "Воскресенье"]
+WEEKDAYS = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"]
+
+bot = TeleBot(TOKEN)
+
+user_group: dict[int, str] = dict()
 
 
-async def start(update: Update, context: CallbackContext) -> None:
-    await update.message.reply_text('Привет! Выбери группу, чтобы увидеть расписание.')
-    await send_group_selection(update)
+@bot.message_handler(commands=["start"])
+def start(message: types.Message):
+    bot.send_message(message.chat.id, "Привет! Напиши свою группу в чат, чтобы увидеть расписание.")
 
 
-def load_groups(filename: str) -> list:
-    groups = set()
-    with open(filename, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            groups.add(row['Group'])
-    return sorted(groups)
+@bot.message_handler(regexp="\\d+\\-\\d+")
+def set_group(message: types.Message):
+    user_group[message.from_user.id] = message.text
+    select_schedule(message)
 
 
-def load_schedule(filename: str, group: str) -> str:
+def select_schedule(message: types.Message) -> None:
+    keyboard = types.InlineKeyboardMarkup([[
+        types.InlineKeyboardButton("День", callback_data="day"),
+        types.InlineKeyboardButton("Неделя", callback_data="week"),
+        types.InlineKeyboardButton("Сессия", callback_data="session")
+    ], [
+        types.InlineKeyboardButton("Назад", callback_data="start")
+    ]])
+
+    bot.send_message(message.chat.id, "Выбери, какое тебе нужно расписание.", reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda callback: True)
+def callback_message(callback: types.CallbackQuery):
+
+    if callback.data == "day":
+        schedule = load_day_schedule(user_group[callback.from_user.id])
+    elif callback.data == "week":
+        schedule = load_week_schedule(user_group[callback.from_user.id])
+    elif callback.data == "session":
+        schedule = load_session_schedule(user_group[callback.from_user.id])
+    elif callback.data == "back":
+        select_schedule(callback.message)
+        return
+    elif callback.data == "start":
+        start(callback.message)
+        return
+
+    keyboard = types.InlineKeyboardMarkup([[types.InlineKeyboardButton("Назад", callback_data="back")]])
+    bot.edit_message_text(schedule, callback.message.chat.id,
+                          callback.message.id, reply_markup=keyboard, parse_mode="Markdown")
+
+
+def load_day_schedule(group: str) -> str:
     schedule = []
-    with open(filename, newline='', encoding='utf-8') as csvfile:
+    with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             if row['Group'] == group and row['Day'] == str(datetime.now().weekday()+1):
@@ -37,43 +70,24 @@ def load_schedule(filename: str, group: str) -> str:
     return '\n'.join(schedule) if schedule else 'Расписание не найдено.'
 
 
-async def button(update: Update, context: CallbackContext) -> None:
-    query = update.callback_query
-    await query.answer()
-    group = query.data
-
-    if group == 'back':
-        await send_group_selection(query)
-    else:
-        schedule = load_schedule('schedule.csv', group)
-        keyboard = [[InlineKeyboardButton("Назад", callback_data='back')]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text(text=f"Расписание для группы *{group}* на *{WEEKDAYS[datetime.now().weekday()]}*:\n\n{schedule}",
-                                      reply_markup=reply_markup, parse_mode='Markdown')
+def load_week_schedule(group: str) -> str:
+    return 'Расписание не найдено.'
 
 
-async def send_group_selection(update_or_query):
-    groups = load_groups('schedule.csv')
-    keyboard = [[InlineKeyboardButton(group, callback_data=group)] for group in groups]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    if isinstance(update_or_query, Update):
-        await update_or_query.message.reply_text(text='Выберите группу:', reply_markup=reply_markup)
-    else:
-        await update_or_query.edit_message_text(text='Выберите группу:', reply_markup=reply_markup)
+def load_session_schedule(group: str) -> str:
+    schedule = []
+    with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['Group'] == group and row['Day'] == str(datetime.now().weekday()+1):
+                formatted_entry = f"`{row['Time']}`: {row['Subject']}, _{row['Room']}_"
+                schedule.append(formatted_entry)
+    return '\n'.join(schedule) if schedule else 'Расписание не найдено.'
 
 
 def main() -> None:
-    # Создаем приложение и передаем ему токен
-    application = Application.builder().token(TOKEN).build()
-
-    # Регистрируем обработчики команд
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(CallbackQueryHandler(button))
-
-    # Запуск бота
-    application.run_polling()
+    bot.polling(non_stop=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
