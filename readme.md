@@ -6,14 +6,14 @@ This is a simple Telegram bot that allows students to view their university sche
 
 - **Group Selection:** Users can select their group to view the schedule
 - **Schedule Display:** The schedule is displayed with formatted text for better readability
-- **Back Button:** Users can navigate back to the group selection menu
+- **Buttons:** Users can navigate through the functionality using buttons
 
 ## Setup
 
 ### Prerequisites
 
 - Python 3.7+
-- `python-telegram-bot` library
+- `telebot` library
 - `python-dotenv` library
 
 ### Installation
@@ -26,7 +26,7 @@ git clone https://github.com/Sm4rtSt1ck/telegram-schedule-bot
 2. **Install the required libraries:**
 
 ```sh
-pip install python-telegram-bot python-dotenv
+pip install telebot python-dotenv
 ```
 
 3. **Create a `.env` file and add your Telegram bot token:**
@@ -58,8 +58,8 @@ python main.py
 2. **Interact with the bot:**
 
     - Start the bot by sending the `/start` command
-    - Select your group from the list to view the schedule
-    - Use the "Back" button to return to the group selection menu
+    - Send your group to view the options
+    - Use the buttons to view the schedule
 
 ## Code Overview
 
@@ -71,12 +71,13 @@ python main.py
 
 ### Functions
 
-- **read_token:** Reads the bot token from `.env`
 - **start:** Sends a welcome message and prompts the user to select a group
-- **load_groups:** Loads the list of groups from the schedule CSV file
-- **load_schedule:** Loads the schedule for a specific group from the CSV file
-- **button:** Handles button clicks (group selection and back navigation)
-- **send_group_selection:** Sends the group selection menu to the user
+- **set_group:** Writes a user group to the dictionary
+- **select_schedule:** Allows the user to select a schedule
+- **button:** Handles button clicks (schedule selection and back navigation)
+- **load_day_schedule:** Loads the user's schedule for the current day
+- **load_week_schedule:** Loads the user's schedule for the week
+- **load_session_schedule:** Loads the user's schedule for the sessions
 
 ## Contributing
 

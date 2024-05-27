@@ -39,7 +39,7 @@ def select_schedule(message: types.Message) -> None:
 
 
 @bot.callback_query_handler(func=lambda callback: True)
-def callback_message(callback: types.CallbackQuery):
+def button(callback: types.CallbackQuery):
 
     if callback.data == "day":
         schedule = load_day_schedule(user_group[callback.from_user.id])
@@ -67,22 +67,26 @@ def load_day_schedule(group: str) -> str:
             if row['Group'] == group and row['Day'] == str(datetime.now().weekday()+1):
                 formatted_entry = f"`{row['Time']}`: {row['Subject']}, _{row['Room']}_"
                 schedule.append(formatted_entry)
-    return '\n'.join(schedule) if schedule else 'Расписание не найдено.'
+    return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n'.join(schedule)}" if schedule else "Расписание не найдено :("
 
 
 def load_week_schedule(group: str) -> str:
-    return 'Расписание не найдено.'
-
-
-def load_session_schedule(group: str) -> str:
-    schedule = []
+    schedule: dict[str, list[str]] = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
     with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            if row['Group'] == group and row['Day'] == str(datetime.now().weekday()+1):
+            if row['Group'] == group:
                 formatted_entry = f"`{row['Time']}`: {row['Subject']}, _{row['Room']}_"
-                schedule.append(formatted_entry)
-    return '\n'.join(schedule) if schedule else 'Расписание не найдено.'
+                schedule[int(row['Day'])].append(formatted_entry)
+    result = ""
+    for day, day_schedule in schedule.items():
+        result += f"*{WEEKDAYS[day-1]}:*\n"
+        result += "\n".join(day_schedule)+"\n"
+    return result if schedule else 'Расписание не найдено.'
+
+
+def load_session_schedule(group: str) -> str:
+    return 'Расписание не найдено.'
 
 
 def main() -> None:
