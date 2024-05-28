@@ -35,7 +35,25 @@ pip install telebot python-dotenv
 TOKEN=YOUR:TOKEN
 ```
 
-4. **Prepare your schedule CSV file:**
+4. **Prepare language file:**
+
+The language file should me names `lang.env`:
+
+```plaintext
+WEEKDAYS=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY
+NO_SCHEDULE=Schedule not found :(
+
+GREETING=Hi!
+SEND_GROUP=Send your group to view the schedule
+SELECT_SCHEDULE=Select the schedule
+DAY=Day
+WEEK=Week
+SESSION=Session
+BACK=Back
+CHANGE_GROUP=Change your group
+```
+
+5. **Prepare your schedule CSV file:**
 
 The CSV file should be named `schedule.csv` and have the following structure:
 
