@@ -2,3 +2,4 @@ __pycache__/
 .vscode/
 .env
 users.csv
+lang2.env
