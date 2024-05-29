@@ -42,15 +42,30 @@ The language file should me names `lang.env`:
 ```plaintext
 WEEKDAYS=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY
 NO_SCHEDULE=Schedule not found :(
+GROUP_NOT_FOUND=Unfortunately, the schedule for the group was not found :(\nWould you like to add it yourself?
 
 GREETING=Hi!
-SEND_GROUP=Send your group to view the schedule
+SEND_GROUP=Write your group in the chat to see the schedule.
 SELECT_SCHEDULE=Select the schedule
 DAY=Day
 WEEK=Week
 SESSION=Session
 BACK=Back
-CHANGE_GROUP=Change your group
+CHANGE_GROUP=Change group
+YES=Yes
+IN_DEVELOPING=In development
+SCHEDULE_ADDED=Schedule successfully added!
+SCHEDULE_NOT_ADDED=Input format error!
+ENTER_SCHEDULE="Enter the schedule in the format:
+*Day of the week (1-7)*, `Time of the class (HH:MM-HH:MM)`, Subject name, _Room_
+
+For example:
+1, 09:00-10:30, Mathematics, A0000
+1, 10:40-12:10, Physics, B0001
+2, 09:00-10:30, Philosophy, V0002
+...
+
+Be careful to enter the class times so that there are no overlaps between subjects!"
 ```
 
 5. **Prepare your schedule CSV file:**
@@ -84,6 +99,7 @@ python main.py
 ### Files
 
 - **main.py:** The main script that runs the bot
+- **schedule.py** Module for working with schedules
 - **.env:** File containing the bot token and other settings (not included in the repository for security reasons)
 - **schedule.csv:** CSV file containing the schedule (needs to be edited by the user)
 
@@ -91,11 +107,12 @@ python main.py
 
 - **start:** Sends a welcome message and prompts the user to select a group
 - **set_group:** Writes a user group to the dictionary
+- **add_schedule & process_schedule:** Allow the user to add a custom schedule
 - **select_schedule:** Allows the user to select a schedule
 - **button:** Handles button clicks (schedule selection and back navigation)
-- **load_day_schedule:** Loads the user's schedule for the current day
-- **load_week_schedule:** Loads the user's schedule for the week
-- **load_session_schedule:** Loads the user's schedule for the sessions
+- **Schedule.get_day:** Loads the user's schedule for the current day
+- **Schedule.get_week:** Loads the user's schedule for the week
+- **Schedule.get_session:** Loads the user's schedule for the sessions
 
 ## Contributing
 
