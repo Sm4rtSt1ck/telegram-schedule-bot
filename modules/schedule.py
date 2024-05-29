@@ -45,7 +45,6 @@ class Schedule:
 
         # Append the validated schedule entries to the CSV file
         with open("schedule.csv", 'a', newline='', encoding='utf-8') as csvfile:
-            csvfile.write("\n")
             for line in schedule_entry:
                 # Split the schedule entry into components
                 components = line.split(', ')
@@ -64,12 +63,14 @@ class Schedule:
         """Retrieve the schedule for the current day for a specific group"""
 
         schedule = []
+
         with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 if row['Group'] == group and row['Day'] == str(datetime.now().weekday()+1):
                     formatted_entry = f"`{row['Time']}`: {row['Subject']}, _{row['Room']}_"
                     schedule.append(formatted_entry)
+
         return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n'.join(schedule)}" if schedule else getenv("NO_SCHEDULE")
 
 

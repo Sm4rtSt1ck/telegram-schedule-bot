@@ -42,7 +42,8 @@ The language file should be named `lang.env`:
 ```plaintext
 WEEKDAYS=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY
 NO_SCHEDULE=Schedule not found :(
-GROUP_NOT_FOUND=Unfortunately, the schedule for the group was not found :(\nWould you like to add it yourself?
+GROUP_NOT_FOUND="Unfortunately, the schedule for the group was not found :(
+Would you like to add it yourself?"
 
 GREETING=Hi!
 SEND_GROUP=Write your group in the chat to see the schedule.
@@ -54,6 +55,7 @@ BACK=Back
 CHANGE_GROUP=Change group
 YES=Yes
 IN_DEVELOPING=In development
+
 SCHEDULE_ADDED=Schedule successfully added!
 SCHEDULE_NOT_ADDED=Input format error!
 ENTER_SCHEDULE="Enter the schedule in the format:
@@ -63,6 +65,10 @@ For example:
 1, 09:00-10:30, Mathematics, A0000
 1, 10:40-12:10, Physics, B0001
 2, 09:00-10:30, Philosophy, V0002
+...
+
+Please enter all information about your classes carefully!
+Enter your group schedule for the whole week!"
 ...
 
 Be careful to enter the class times so that there are no overlaps between subjects!"

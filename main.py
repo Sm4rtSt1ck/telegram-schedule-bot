@@ -18,6 +18,16 @@ users_groups: dict[int, str] = dict()
 aboba = True
 
 
+def get_group(message: types.Message, userID: int) -> str:
+    """Safely return the user's group (if user exists)"""
+
+    try:
+        return users_groups[userID]
+    except KeyError:
+        bot.send_message(message.chat.id, getenv("USER_NOT_FOUND"))
+        return None
+
+
 @bot.message_handler(commands=["start"])
 def start(message: types.Message):
     """Handler for the `/start` command"""
@@ -61,7 +71,11 @@ def process_schedule(message: types.Message) -> None:
     if not aboba: return
 
     # Add the schedule and check if it was added successfully
-    added = schedule.set_schedule(message, users_groups[message.from_user.id])
+    group = get_group(message, message.from_user.id)
+    if not group:
+        bot.register_next_step_handler(message, set_group)
+        return
+    added = schedule.set_schedule(message, group)
 
     if added:
         # Prompt the user to select the type of schedule
@@ -71,7 +85,9 @@ def process_schedule(message: types.Message) -> None:
         # Ask the user for the correct format
         bot.send_message(message.chat.id, getenv("SCHEDULE_NOT_ADDED"))
         sent_message = bot.send_message(message.chat.id, getenv("ENTER_SCHEDULE"))
-        button(types.CallbackQuery(sent_message.id, sent_message.from_user, "add_schedule", sent_message.chat, sent_message.json, sent_message))
+        button(types.CallbackQuery(sent_message.id, sent_message.from_user,
+                                   "add_schedule", sent_message.chat,
+                                   sent_message.json, sent_message))
 
 
 def select_schedule(message: types.Message) -> None:
@@ -95,12 +111,17 @@ def button(callback: types.CallbackQuery):
     # just aboba.
     global aboba
 
+    group = get_group(callback.message, callback.from_user.id)
+    if not group:
+        bot.register_next_step_handler(callback.message, set_group)
+        return
+
     if callback.data == "day":
-        show_schedule = schedule.get_day(users_groups[callback.from_user.id])
+        show_schedule = schedule.get_day(group)
     elif callback.data == "week":
-        show_schedule = schedule.get_week(users_groups[callback.from_user.id])
+        show_schedule = schedule.get_week(group)
     elif callback.data == "session":
-        show_schedule = schedule.get_session(users_groups[callback.from_user.id])
+        show_schedule = schedule.get_session(group)
     elif callback.data == "back":
         select_schedule(callback.message)
         return
