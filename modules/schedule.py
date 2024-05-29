@@ -7,14 +7,16 @@ from dotenv import load_dotenv
 from telebot import TeleBot, types
 
 
+# Load environment variables from a specified .env file
 load_dotenv("lang.env")
 
 WEEKDAYS = list(map(lambda day: day.replace("_", " "), getenv("WEEKDAYS").split()))
-NOT_FOUND = getenv("NO_SCHEDULE")
 
 
 class Schedule:
     def check_group(self, group: str) -> bool:
+        """Check if the group exists in the schedule CSV file"""
+
         with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
@@ -22,6 +24,8 @@ class Schedule:
         return False
 
     def set_schedule(self, message: types.Message, group: str) -> bool:
+        """Add a new schedule for a group, validating the input format"""
+
         schedule_entry = message.text.split("\n")
 
         # Check if the schedule entry matches the required format
@@ -35,9 +39,11 @@ class Schedule:
             subject = components[2]
             room = components[3]
 
+            # Validate the day, subject, and room
             if not 1 <= day <= 7 or not subject or not room:
                 return False
 
+        # Append the validated schedule entries to the CSV file
         with open("schedule.csv", 'a', newline='', encoding='utf-8') as csvfile:
             csvfile.write("\n")
             for line in schedule_entry:
@@ -55,6 +61,8 @@ class Schedule:
         return True
 
     def get_day(self, group: str) -> str:
+        """Retrieve the schedule for the current day for a specific group"""
+
         schedule = []
         with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -62,10 +70,12 @@ class Schedule:
                 if row['Group'] == group and row['Day'] == str(datetime.now().weekday()+1):
                     formatted_entry = f"`{row['Time']}`: {row['Subject']}, _{row['Room']}_"
                     schedule.append(formatted_entry)
-        return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n'.join(schedule)}" if schedule else NOT_FOUND
+        return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n'.join(schedule)}" if schedule else getenv("NO_SCHEDULE")
 
 
     def get_week(self, group: str) -> str:
+        """Retrieve the weekly schedule for a specific group"""
+
         schedule: dict[str, list[str]] = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
         with open("schedule.csv", newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -76,9 +86,11 @@ class Schedule:
         result = ""
         for day, day_schedule in schedule.items():
             result += f"*{WEEKDAYS[day-1]}:*\n"
-            result += ("\n".join(day_schedule) if len(day_schedule) > 0 else NOT_FOUND) + "\n\n"
-        return result if schedule else NOT_FOUND
+            result += ("\n".join(day_schedule) if len(day_schedule) > 0 else getenv("NO_SCHEDULE")) + "\n\n"
+        return result if schedule else getenv("NO_SCHEDULE")
 
 
     def get_session(self, group: str) -> str:
+        """Retrieve the session schedule for a specific group (not yet implemented)"""
+
         return getenv("IN_DEVELOPING")
