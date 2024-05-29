@@ -25,7 +25,6 @@ def get_group(message: types.Message, userID: int) -> str:
     try:
         return users_groups[userID]
     except KeyError:
-        bot.send_message(message.chat.id, getenv("USER_NOT_FOUND"))
         return None
 
 
@@ -55,7 +54,6 @@ def set_group(message: types.Message):
         add_schedule(sent_message)
 
 
-@log_user_activity
 def add_schedule(message: types.Message) -> None:
     """Ask the user if they want to add the schedule"""
 
@@ -89,7 +87,7 @@ def process_schedule(message: types.Message) -> None:
     else:
         # Ask the user for the correct format
         bot.send_message(message.chat.id, getenv("SCHEDULE_NOT_ADDED"))
-        sent_message = bot.send_message(message.chat.id, getenv("ENTER_SCHEDULE"))
+        sent_message = bot.send_message(message.chat.id, getenv("ENTER_SCHEDULE"), parse_mode="Markdown")
         button(types.CallbackQuery(sent_message.id, sent_message.from_user,
                                    "add_schedule", sent_message.chat,
                                    sent_message.json, sent_message))
@@ -118,7 +116,8 @@ def button(callback: types.CallbackQuery):
     global aboba
 
     group = get_group(callback.message, callback.from_user.id)
-    if not group:
+    if not group and callback.data in ("day", "week", "session", "back"):
+        bot.send_message(callback.chat.id, getenv("USER_NOT_FOUND"))
         bot.register_next_step_handler(callback.message, set_group)
         return
 
