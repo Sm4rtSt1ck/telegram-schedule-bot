@@ -8,7 +8,7 @@ from telebot import types
 
 
 # Load environment variables from a specified .env file
-load_dotenv("lang2.env")
+load_dotenv("lang.env")
 
 WEEKDAYS = list(map(lambda day: day.replace("_", " "), getenv("WEEKDAYS").split()))
 
