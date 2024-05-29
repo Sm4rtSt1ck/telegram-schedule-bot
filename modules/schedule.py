@@ -71,7 +71,7 @@ class Schedule:
                     formatted_entry = f"`{row['Time']}`: {row['Subject']}, _{row['Room']}_"
                     schedule.append(formatted_entry)
 
-        return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n'.join(schedule)}" if schedule else getenv("NO_SCHEDULE")
+        return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n\n'.join(schedule)}" if schedule else getenv("NO_SCHEDULE")
 
 
     def get_week(self, group: str) -> str:

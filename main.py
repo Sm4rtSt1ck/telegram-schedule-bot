@@ -117,7 +117,7 @@ def button(callback: types.CallbackQuery):
 
     group = get_group(callback.message, callback.from_user.id)
     if not group and callback.data in ("day", "week", "session", "back"):
-        bot.send_message(callback.chat.id, getenv("USER_NOT_FOUND"))
+        bot.send_message(callback.message.chat.id, getenv("USER_NOT_FOUND"))
         bot.register_next_step_handler(callback.message, set_group)
         return
 
