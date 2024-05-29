@@ -37,7 +37,7 @@ TOKEN=YOUR:TOKEN
 
 4. **Prepare language file:**
 
-The language file should me names `lang.env`:
+The language file should be named `lang.env`:
 
 ```plaintext
 WEEKDAYS=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY
