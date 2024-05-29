@@ -4,7 +4,7 @@ from os import getenv
 import re
 
 from dotenv import load_dotenv
-from telebot import TeleBot, types
+from telebot import types
 
 
 # Load environment variables from a specified .env file

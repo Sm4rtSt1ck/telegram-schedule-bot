@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from telebot import TeleBot, types
 
 from modules.schedule import Schedule
+from modules.log import log_user_activity
 
 
 # Load environment variables from a .env file
@@ -29,6 +30,7 @@ def get_group(message: types.Message, userID: int) -> str:
 
 
 @bot.message_handler(commands=["start"])
+@log_user_activity
 def start(message: types.Message):
     """Handler for the `/start` command"""
 
@@ -38,6 +40,7 @@ def start(message: types.Message):
     bot.register_next_step_handler(message, set_group)
 
 
+@log_user_activity
 def set_group(message: types.Message):
     """Set the user's group"""
 
@@ -52,6 +55,7 @@ def set_group(message: types.Message):
         add_schedule(sent_message)
 
 
+@log_user_activity
 def add_schedule(message: types.Message) -> None:
     """Ask the user if they want to add the schedule"""
 
@@ -64,6 +68,7 @@ def add_schedule(message: types.Message) -> None:
                           reply_markup=keyboard)
 
 
+@log_user_activity
 def process_schedule(message: types.Message) -> None:
     """Process and add the schedule"""
 
@@ -105,6 +110,7 @@ def select_schedule(message: types.Message) -> None:
 
 
 @bot.callback_query_handler(func=lambda callback: True)
+@log_user_activity
 def button(callback: types.CallbackQuery):
     """Callback query handler for button clicks"""
 
