@@ -29,33 +29,28 @@ class Schedule:
         schedule_entry = message.text.split("\n")
 
         # Check if the schedule entry matches the required format
-        entry_pattern = re.compile(r'^\d, \d{2}:\d{2}-\d{2}:\d{2}, [0-9a-zA-Zа-яА-Я]+, [0-9a-zA-Zа-яА-Я]+')
+        entry_pattern = re.compile(r'^\d\s*,\s*\d{2}:\d{2}-\d{2}:\d{2}\s*,[0-9a-zA-Zа-яА-Я\s]+, [0-9a-zA-Zа-яА-Я\s]+')
+        new_schedule: list[list] = []
         for line in schedule_entry:
             if not entry_pattern.match(line):
                 return False
             components = line.split(', ')
-            day = int(components[0])
-            time = components[1]
-            subject = components[2]
-            room = components[3]
+            day = int(components[0].strip())
+            time = components[1].strip()
+            subject = components[2].strip()
+            room = components[3].strip()
 
             # Validate the day, subject, and room
             if not 1 <= day <= 7 or not subject or not room:
                 return False
 
-        # Append the validated schedule entries to the CSV file
-        with open("schedule.csv", 'a', newline='', encoding='utf-8') as csvfile:
-            for line in schedule_entry:
-                # Split the schedule entry into components
-                components = line.split(', ')
-                day = int(components[0])
-                time = components[1]
-                subject = components[2]
-                room = components[3]
+            # Append the validated schedule entries
+            new_schedule.append([group, day, time, subject, room])
 
-                # If all checks pass, append the schedule to the CSV file
+        # If all checks pass, append the schedule to the CSV file
+        with open("schedule.csv", 'a', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
-                writer.writerow([group, day, time, subject, room])
+                writer.writerows(new_schedule)
         
         return True
 
