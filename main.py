@@ -1,4 +1,5 @@
 from os import getenv
+from csv import DictReader, DictWriter
 
 from dotenv import load_dotenv
 from telebot import TeleBot, types
@@ -15,15 +16,29 @@ schedule = Schedule()
 
 # Users' id and their groups
 users_groups: dict[int, str] = dict()
+with open("users.csv", newline='', encoding='utf-8') as csvfile:
+    reader = DictReader(csvfile)
+    for row in reader:
+        users_groups[int(row["UserID"])] = row["Group"]
+
 # just aboba and nothing else.
 aboba = True
 
 
-def get_group(message: types.Message, userID: int) -> str:
+def rewrite_groups() -> None:
+    with open("users.csv", 'w', newline='', encoding='utf-8') as csvfile:
+        writer = DictWriter(csvfile, fieldnames=['UserID', 'Group'])
+        writer.writeheader()
+        
+        for uid, grp in users_groups.items():
+            writer.writerow({'UserID': uid, 'Group': grp})
+
+
+def get_group(userID: int) -> str:
     """Safely return the user's group (if user exists)"""
 
     try:
-        return users_groups[userID]
+        return users_groups.get(userID)
     except KeyError:
         return None
 
@@ -34,19 +49,28 @@ def start(message: types.Message):
     """Handler for the `/start` command"""
 
     bot.send_message(message.chat.id, getenv("GREETING"))
-    bot.send_message(message.chat.id, getenv("SEND_GROUP"))
 
-    bot.register_next_step_handler(message, set_group)
+    if message.from_user.id not in users_groups:
+        bot.send_message(message.chat.id, getenv("SEND_GROUP"))
+        bot.register_next_step_handler(message, set_group)
+    else:
+        sent_message = bot.send_message(message.chat.id, getenv("SELECT_SCHEDULE"))
+        select_schedule(sent_message)
 
 
 @log_user_activity
 def set_group(message: types.Message):
     """Set the user's group"""
-
-    users_groups[message.from_user.id] = message.text
+    
+    new_group = False
+    if message.from_user.id not in users_groups.keys() or users_groups.get(message.from_user.id) != message.text:
+        users_groups[message.from_user.id] = message.text
+        new_group = True
 
     # Check if the schedule for the group exists
     if schedule.check_group(message.text):
+        if new_group:
+            rewrite_groups(message.from_user.id, message.text)
         sent_message = bot.send_message(message.chat.id, getenv("SELECT_SCHEDULE"))
         select_schedule(sent_message)
     else:
@@ -74,16 +98,18 @@ def process_schedule(message: types.Message) -> None:
     if not aboba: return
 
     # Add the schedule and check if it was added successfully
-    group = get_group(message, message.from_user.id)
+    group = get_group(message.from_user.id)
     if not group:
         bot.register_next_step_handler(message, set_group)
         return
-    added = schedule.set_schedule(message, group)
 
+    added = schedule.set_schedule(message, group)
     if added:
         # Prompt the user to select the type of schedule
         sent_message = bot.send_message(message.chat.id, getenv("SCHEDULE_ADDED"))
         select_schedule(sent_message)
+        rewrite_groups(message.from_user.id, group)
+
     else:
         # Ask the user for the correct format
         bot.send_message(message.chat.id, getenv("SCHEDULE_NOT_ADDED"))
@@ -115,7 +141,7 @@ def button(callback: types.CallbackQuery):
     # just aboba.
     global aboba
 
-    group = get_group(callback.message, callback.from_user.id)
+    group = get_group(callback.from_user.id)
     if not group and callback.data in ("day", "week", "session", "back"):
         bot.send_message(callback.message.chat.id, getenv("USER_NOT_FOUND"))
         bot.register_next_step_handler(callback.message, set_group)

@@ -86,6 +86,17 @@ Group1,2,09:45-11:15,Physics,Room 102
 ```
 where `Day` is the number of the day in the week (1-7)
 
+6. **Prepare your users-groups CSV file:**
+
+The CSV file should be named `users.csv` and have the following structure:
+
+```csv
+UserID,Group
+...
+```
+
+When a user sends their group for which there is already a schedule, the user ID and his group are written to this file.
+
 ## Usage
 
 1. **Run the bot:**
@@ -108,6 +119,7 @@ python main.py
 - **schedule.py** Module for working with schedules
 - **.env:** File containing the bot token and other settings (not included in the repository for security reasons)
 - **schedule.csv:** CSV file containing the schedule (needs to be edited by the user)
+- **users.csv:** File containing the user groups (not included in the repository for security reasons)
 
 ### Functions
 
@@ -116,9 +128,12 @@ python main.py
 - **add_schedule & process_schedule:** Allow the user to add a custom schedule
 - **select_schedule:** Allows the user to select a schedule
 - **button:** Handles button clicks (schedule selection and back navigation)
-- **Schedule.get_day:** Loads the user's schedule for the current day
-- **Schedule.get_week:** Loads the user's schedule for the week
-- **Schedule.get_session:** Loads the user's schedule for the sessions
+- **Schedule.check_group:** Check if the group exists in the schedule CSV file
+- **Schedule.set_schedule:** Add a new schedule for a group, validating the input format
+- **Schedule.get_day:** Sends the user's schedule for the current day
+- **Schedule.get_week:** Sends the user's schedule for the week
+- **Schedule.get_session:** Sends the user's schedule for the sessions (not implemented)
+- **And some others**
 
 ## Contributing
 
@@ -131,4 +146,3 @@ python main.py
 ## License
 
 This project doesn't have a license because I'm a oboltus
-

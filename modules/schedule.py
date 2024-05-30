@@ -91,7 +91,8 @@ class Schedule:
         result = ""
         for day, day_schedule in schedule.items():
             result += f"*{WEEKDAYS[day-1]}:*\n"
-            result += ("\n".join(day_schedule) if len(day_schedule) > 0 else getenv("NO_SCHEDULE")) + "\n\n"
+            result += ("\n".join(day_schedule) if len
+            (day_schedule) > 0 else getenv("NO_SCHEDULE")) + "\n\n"
         return result if schedule else getenv("NO_SCHEDULE")
 
 
