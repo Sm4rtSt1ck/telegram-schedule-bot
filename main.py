@@ -21,7 +21,7 @@ aboba = True
 
 @bot.message_handler(commands=["start"])
 @log_user_activity
-def start(message: types.Message):
+def start(message: types.Message) -> None:
     """Handler for the `/start` command"""
 
     bot.send_message(message.chat.id, getenv("GREETING"))
@@ -35,7 +35,7 @@ def start(message: types.Message):
 
 
 @log_user_activity
-def set_group(message: types.Message):
+def set_group(message: types.Message) -> None:
     """Set the user's group"""
     
     new_group = False
@@ -111,7 +111,7 @@ def select_schedule(message: types.Message) -> None:
 
 @bot.callback_query_handler(func=lambda callback: True)
 @log_user_activity
-def button(callback: types.CallbackQuery):
+def button(callback: types.CallbackQuery) -> None:
     """Callback query handler for button clicks"""
 
     # just aboba.

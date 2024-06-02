@@ -1,7 +1,7 @@
 from csv import DictReader, DictWriter
 
 
-def load_users() -> dict[int, str]:
+def __load_users() -> dict[int, str]:
     with open("database/users.csv", newline='', encoding='utf-8') as csvfile:
         reader = DictReader(csvfile)
         users: dict[int, str] = {}
@@ -15,26 +15,26 @@ def rewrite_groups() -> None:
         writer = DictWriter(csvfile, fieldnames=['UserID', 'Group'])
         writer.writeheader()
         
-        for uid, grp in users_groups.items():
+        for uid, grp in __users_groups.items():
             writer.writerow({'UserID': uid, 'Group': grp})
 
 
 def check_user(userID: int) -> bool:
-    return userID in users_groups
+    return userID in __users_groups
 
 
 def get_group(userID: int) -> str:
     """Safely return the user's group (if user exists)"""
 
     try:
-        return users_groups.get(userID)
+        return __users_groups.get(userID)
     except KeyError:
         return None
 
 
 def get_users() -> dict[int, str]:
-    return users_groups
+    return __users_groups
 
 
 # Users' id and their groups
-users_groups: dict[int, str] = load_users()
+__users_groups: dict[int, str] = __load_users()

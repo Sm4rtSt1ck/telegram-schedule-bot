@@ -15,20 +15,20 @@ WEEKDAYS = list(map(lambda day: day.replace("_", " "), getenv("WEEKDAYS").split(
 
 class Schedule:
     def __init__(self, file_name: str = "database/schedule.csv") -> None:
-        self.file_name = file_name
-        self.schedule: dict[str, list] = {}
-        with open(self.file_name, newline='', encoding='utf-8') as csvfile:
+        self.__file_name = file_name
+        self.__schedule: dict[str, list] = {}
+        with open(self.__file_name, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 try:
-                    self.schedule[row["Group"]].append([row["Day"], row["Time"], row["Subject"], row["Room"]])
+                    self.__schedule[row["Group"]].append([row["Day"], row["Time"], row["Subject"], row["Room"]])
                 except KeyError:
-                    self.schedule[row["Group"]] = [[row["Day"], row["Time"], row["Subject"], row["Room"]]]
+                    self.__schedule[row["Group"]] = [[row["Day"], row["Time"], row["Subject"], row["Room"]]]
 
     def check_group(self, group: str) -> bool:
         """Check if the group exists in the schedule CSV file"""
 
-        return group in self.schedule.keys()
+        return group in self.__schedule.keys()
 
     def set_schedule(self, message: types.Message, group: str) -> bool:
         """Add a new schedule for a group, validating the input format"""
@@ -57,11 +57,11 @@ class Schedule:
         # If all checks pass, append the schedule
         for row in new_schedule:
             try:
-                self.schedule[row[0]].append([row[1], row[2], row[3], row[4]])
+                self.__schedule[row[0]].append([row[1], row[2], row[3], row[4]])
             except KeyError:
-                self.schedule[row[0]] = [[row[1], row[2], row[3], row[4]]]
+                self.__schedule[row[0]] = [[row[1], row[2], row[3], row[4]]]
 
-        with open(self.file_name, 'a', newline='', encoding='utf-8') as csvfile:
+        with open(self.__file_name, 'a', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerows(new_schedule)
         
@@ -72,7 +72,7 @@ class Schedule:
 
         schedule = []
 
-        for couple in self.schedule[group]:
+        for couple in self.__schedule[group]:
             if couple[0] == str(datetime.now().weekday()+1):
                 formatted_entry = f"`{couple[1]}`: {couple[2]}, _{couple[3]}_"
                 schedule.append(formatted_entry)
@@ -84,7 +84,7 @@ class Schedule:
         """Retrieve the weekly schedule for a specific group"""
 
         schedule: dict[str, list[str]] = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
-        for couple in self.schedule[group]:
+        for couple in self.__schedule[group]:
             formatted_entry = f"`{couple[1]}`: {couple[2]}, _{couple[3]}_"
             schedule[int(couple[0])].append(formatted_entry)
 

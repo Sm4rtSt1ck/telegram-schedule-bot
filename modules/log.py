@@ -6,7 +6,7 @@ from telebot import types
 # Set up logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%m.%d %H:%M:%S')
 
-def log_user_activity(func):
+def log_user_activity(func) -> None:
     @wraps(func)
     def wrapper(data: types.Message | types.CallbackQuery, *args, **kwargs):
         user_tag = data.from_user.username if data.from_user.username else data.from_user.id
