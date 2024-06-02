@@ -9,14 +9,14 @@ from modules.log import log_user_activity
 
 
 # Load environment variables from a .env file
-load_dotenv()
+load_dotenv("settings/.env")
 
 bot = TeleBot(getenv("TOKEN"))
 schedule = Schedule()
 
 # Users' id and their groups
 users_groups: dict[int, str] = dict()
-with open("users.csv", newline='', encoding='utf-8') as csvfile:
+with open("database/users.csv", newline='', encoding='utf-8') as csvfile:
     reader = DictReader(csvfile)
     for row in reader:
         users_groups[int(row["UserID"])] = row["Group"]
@@ -26,7 +26,7 @@ aboba = True
 
 
 def rewrite_groups() -> None:
-    with open("users.csv", 'w', newline='', encoding='utf-8') as csvfile:
+    with open("database/users.csv", 'w', newline='', encoding='utf-8') as csvfile:
         writer = DictWriter(csvfile, fieldnames=['UserID', 'Group'])
         writer.writeheader()
         
@@ -70,7 +70,7 @@ def set_group(message: types.Message):
     # Check if the schedule for the group exists
     if schedule.check_group(message.text):
         if new_group:
-            rewrite_groups(message.from_user.id, message.text)
+            rewrite_groups()
         sent_message = bot.send_message(message.chat.id, getenv("SELECT_SCHEDULE"))
         select_schedule(sent_message)
     else:
@@ -108,7 +108,7 @@ def process_schedule(message: types.Message) -> None:
         # Prompt the user to select the type of schedule
         sent_message = bot.send_message(message.chat.id, getenv("SCHEDULE_ADDED"))
         select_schedule(sent_message)
-        rewrite_groups(message.from_user.id, group)
+        rewrite_groups()
 
     else:
         # Ask the user for the correct format

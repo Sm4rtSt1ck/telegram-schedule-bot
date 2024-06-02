@@ -8,13 +8,13 @@ from telebot import types
 
 
 # Load environment variables from a specified .env file
-load_dotenv("lang.env")
+load_dotenv("settings/lang.env")
 
 WEEKDAYS = list(map(lambda day: day.replace("_", " "), getenv("WEEKDAYS").split()))
 
 
 class Schedule:
-    def __init__(self, file_name: str = "schedule.csv") -> None:
+    def __init__(self, file_name: str = "database/schedule.csv") -> None:
         self.file_name = file_name
         self.schedule: dict[str, list] = {}
         with open(self.file_name, newline='', encoding='utf-8') as csvfile:
