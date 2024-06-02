@@ -1,11 +1,11 @@
 from os import getenv
-from csv import DictReader, DictWriter
 
 from dotenv import load_dotenv
 from telebot import TeleBot, types
 
 from modules.schedule import Schedule
 from modules.log import log_user_activity
+from modules.database import rewrite_groups, check_user, get_users, get_group
 
 
 # Load environment variables from a .env file
@@ -14,33 +14,9 @@ load_dotenv("settings/.env")
 bot = TeleBot(getenv("TOKEN"))
 schedule = Schedule()
 
-# Users' id and their groups
-users_groups: dict[int, str] = dict()
-with open("database/users.csv", newline='', encoding='utf-8') as csvfile:
-    reader = DictReader(csvfile)
-    for row in reader:
-        users_groups[int(row["UserID"])] = row["Group"]
 
 # just aboba and nothing else.
 aboba = True
-
-
-def rewrite_groups() -> None:
-    with open("database/users.csv", 'w', newline='', encoding='utf-8') as csvfile:
-        writer = DictWriter(csvfile, fieldnames=['UserID', 'Group'])
-        writer.writeheader()
-        
-        for uid, grp in users_groups.items():
-            writer.writerow({'UserID': uid, 'Group': grp})
-
-
-def get_group(userID: int) -> str:
-    """Safely return the user's group (if user exists)"""
-
-    try:
-        return users_groups.get(userID)
-    except KeyError:
-        return None
 
 
 @bot.message_handler(commands=["start"])
@@ -50,7 +26,7 @@ def start(message: types.Message):
 
     bot.send_message(message.chat.id, getenv("GREETING"))
 
-    if message.from_user.id not in users_groups:
+    if not check_user(message.from_user.id):
         bot.send_message(message.chat.id, getenv("SEND_GROUP"))
         bot.register_next_step_handler(message, set_group)
     else:
@@ -63,8 +39,8 @@ def set_group(message: types.Message):
     """Set the user's group"""
     
     new_group = False
-    if message.from_user.id not in users_groups.keys() or users_groups.get(message.from_user.id) != message.text:
-        users_groups[message.from_user.id] = message.text
+    if not check_user(message.from_user.id) or get_users().get(message.from_user.id) != message.text:
+        get_users()[message.from_user.id] = message.text
         new_group = True
 
     # Check if the schedule for the group exists
