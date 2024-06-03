@@ -92,10 +92,12 @@ The CSV file should be named `users.csv` and have the following structure:
 
 ```csv
 UserID,Group
+000000000,test-group-1
+123456789,test-group-2
 ...
 ```
 
-When a user sends their group for which there is already a schedule, the user ID and his group are written to this file.
+When a user sends their group for which there is already a schedule, the user ID and his group are written to this file. Does not require manual filling.
 
 ## Usage
 
@@ -116,24 +118,44 @@ python main.py
 ### Files
 
 - **main.py:** The main script that runs the bot
-- **schedule.py** Module for working with schedules
-- **.env:** File containing the bot token and other settings (not included in the repository for security reasons)
-- **schedule.csv:** CSV file containing the schedule (needs to be edited by the user)
-- **users.csv:** File containing the user groups (not included in the repository for security reasons)
+- **modules/schedule.py** Module for working with schedules
+- **modules/database.py** Module for writing and reading user groups
+- **modules/log.py** Module for logging user actions to the console
+- **settings/.env:** File containing the bot token and other settings (not included in the repository for security reasons)
+- **settings/lang(_en).env:** File containing the bot's response phrases to user actions
+- **database/schedule.csv:** CSV file containing the schedule (needs to be edited by the user)
+- **database/users.csv:** File containing the user groups (not included in the repository for security reasons)
 
-### Functions
+### Functions & methods
+
+#### main.py
 
 - **start:** Sends a welcome message and prompts the user to select a group
 - **set_group:** Writes a user group to the dictionary
 - **add_schedule & process_schedule:** Allow the user to add a custom schedule
 - **select_schedule:** Allows the user to select a schedule
 - **button:** Handles button clicks (schedule selection and back navigation)
-- **Schedule.check_group:** Check if the group exists in the schedule CSV file
-- **Schedule.set_schedule:** Add a new schedule for a group, validating the input format
-- **Schedule.get_day:** Sends the user's schedule for the current day
-- **Schedule.get_week:** Sends the user's schedule for the week
-- **Schedule.get_session:** Sends the user's schedule for the sessions (not implemented)
-- **And some others**
+
+#### database.py
+
+- **__load_users:** Loads users and their groups from a CSV file into a dictionary
+- **rewrite_groups:** Rewrites the users.csv file with the current user group data from the dictionary
+- **check_user:** Checks if a user exists in the current dictionary of users
+- **get_group:** Returns the group of a user if the user exists
+- **get_users:** Returns the entire dictionary of users and their groups
+
+#### schedule.py (Schedule)
+
+- **__init__:** Constructor that loads a schedule from a CSV file
+- **check_group:** Check if the group exists in the schedule CSV file
+- **set_schedule:** Add a new schedule for a group, validating the input format
+- **get_day:** Sends the user's schedule for the current day
+- **get_week:** Sends the user's schedule for the week
+- **get_session:** Sends the user's schedule for the sessions (not implemented)
+
+#### log.py
+
+- **log_user_activity:** Logs user actions to the console
 
 ## Contributing
 

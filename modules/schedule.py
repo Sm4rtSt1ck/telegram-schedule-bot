@@ -28,7 +28,7 @@ class Schedule:
     def check_group(self, group: str) -> bool:
         """Check if the group exists in the schedule CSV file"""
 
-        return group in self.__schedule.keys()
+        return group in self.__schedule
 
     def set_schedule(self, message: types.Message, group: str) -> bool:
         """Add a new schedule for a group, validating the input format"""
