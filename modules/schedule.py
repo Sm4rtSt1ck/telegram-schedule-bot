@@ -77,7 +77,7 @@ class Schedule:
                 formatted_entry = f"`{couple[1]}`: {couple[2]}, _{couple[3]}_"
                 schedule.append(formatted_entry)
 
-        return f"*{WEEKDAYS[datetime.now().weekday()]}:*\n{'\n\n'.join(schedule)}" if schedule else getenv("NO_SCHEDULE")
+        return "*{}:*\n{}".format(WEEKDAYS[datetime.now().weekday()], '\n\n'.join(schedule)) if schedule else getenv("NO_SCHEDULE")
 
 
     def get_week(self, group: str) -> str:

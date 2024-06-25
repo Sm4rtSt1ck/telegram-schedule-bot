@@ -49,9 +49,12 @@ def set_group(message: types.Message) -> None:
             rewrite_groups()
         sent_message = bot.send_message(message.chat.id, getenv("SELECT_SCHEDULE"))
         select_schedule(sent_message)
-    else:
+    elif not message.text.startswith("/"):
         sent_message = bot.send_message(message.chat.id, getenv("GROUP_NOT_FOUND"))
         add_schedule(sent_message)
+    else:
+        bot.send_message(message.chat.id, getenv("INCORRECT_GROUP_NAME"))
+        bot.register_next_step_handler(message, set_group)
 
 
 def add_schedule(message: types.Message) -> None:
